@@ -12,7 +12,7 @@
 
       $("#pricesGrid").empty();
 
-      var thead = "<thead><th>Arrival / Departure</th>";
+      var thead = "<thead><th>Departure/Arrival</th>";
       var rows = "";
 
       for (var i = 1; i < days + 1; i++) {
@@ -21,7 +21,7 @@
         thead += "<th>" + formatDate(departureDate) + "</th>";
 
         var row = "<tr>";
-        for (var j = 0; j < days + 1; j++) {
+        for (var j = 0; j < days; j++) {
           var returnDate = addDays(startDate, i);
           if (j === 0) {
             row += "<td>" + formatDate(returnDate) + "</td>";
