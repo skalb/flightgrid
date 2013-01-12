@@ -1,0 +1,23 @@
+#dates
+  h3 
+    | Start date:
+    input(type='text', id='beginDate', value='02/01/2013')
+
+  h3
+    | End date:
+    input(type='text', id='endDate', value='02/02/2013')
+
+#airports
+  h3 
+    | Origin:
+    input(type='text', id='origin', value='POA')
+
+  h3
+    | Destination:
+    input(type='text', id='destination', value="GIG")
+
+#options
+  input(type='button', id='submitItinerary', value='Find prices')
+
+
+table(id='pricesGrid')
