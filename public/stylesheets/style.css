@@ -12,10 +12,10 @@ table td, table th{
   padding: 5px;
 }
 
-.best {
-  background-color: green;
-}
-
 .worst {
   background-color: red;
+}
+
+.best {
+  background-color: lightgreen;
 }

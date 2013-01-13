@@ -1,6 +1,7 @@
 (function () {
   var oneDay = 1000*60*60*24,
-      minPrice = 10000000;
+      minPrice = 10000000,
+      maxPrice = 0;
 
   $(document).ready(function() {
     var $departStartDate = $( "#departStartDate" ),
@@ -17,6 +18,7 @@
           returnDates = getDates($returnStartDate, $returnEndDate);
 
       minPrice = 10000000;
+      maxPrice = 0;
       $("#pricesGrid").empty();
       $("#pricesGrid").append(getTableHeader(returnDates));
       $("#pricesGrid").append(getRows(departureDates, returnDates));
@@ -97,6 +99,15 @@
     if (price <= minPrice) {
       $(id).addClass('best');
     }
+
+    if (price > maxPrice) {
+      maxPrice = price;
+      $('.worst').removeClass('worst');
+    }
+    if (price >= maxPrice) {
+      $(id).addClass('worst');
+    }
+
     $(id).text(price);
   }
 
