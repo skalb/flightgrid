@@ -1,5 +1,5 @@
 (function () {
-  var one_day = 1000*60*60*24,
+  var oneDay = 1000*60*60*24,
       minPrice = 10000000;
 
   $(document).ready(function() {
@@ -18,42 +18,45 @@
 
       minPrice = 10000000;
       $("#pricesGrid").empty();
-
-      var thead = "<thead><th>Departure/Return</th>";
-
-      _.each(returnDates, function(d) {
-        thead += "<th>" + formatDate(d) + "</th>";
-      });
-      
-      thead += "</thead>";
-
-      var rows = "";
-
-      for (var r = 0; r < departureDates.length; r++) {
-        var row = "<tr>",
-            departureDate = departureDates[r];
-        
-        row += "<td>" + formatDate(departureDate) + "</td>";
-
-        for (var c = 0; c < returnDates.length; c++) {
-          var returnDate = returnDates[c],
-              id = "r" + r + "c" + c;
-
-          row += "<td id=" + id + ">";
-          if (returnDate.getTime() > departureDate.getTime()) {
-            row += "...";
-            callApi(id, departureDate, returnDate);
-          }
-          row += "</td>";
-        }
-       row += "</tr>";
-       rows += row;
-      }
-
-      $("#pricesGrid").append(thead);
-      $("#pricesGrid").append(rows);
+      $("#pricesGrid").append(getTableHeader(returnDates));
+      $("#pricesGrid").append(getRows(departureDates, returnDates));
     });
   });
+
+  function getRows(departureDates, returnDates) {
+    var rows = "";
+
+    for (var r = 0; r < departureDates.length; r++) {
+      var departureDate = departureDates[r],
+          row = "<tr><td>" + formatDate(departureDate) + "</td>";
+
+      for (var c = 0; c < returnDates.length; c++) {
+        var returnDate = returnDates[c],
+            id = "r" + r + "c" + c;
+
+        row += "<td id=" + id + ">";
+        if (returnDate.getTime() > departureDate.getTime()) {
+          row += "...";
+          callApi(id, departureDate, returnDate);
+        }
+        row += "</td>";
+      }
+     row += "</tr>";
+     rows += row;
+    }
+
+    return rows;
+  }
+
+  function getTableHeader(returnDates) {
+    var thead = "<thead><th>Departure/Return</th>";
+
+    _.each(returnDates, function(d) {
+      thead += "<th>" + formatDate(d) + "</th>";
+    });
+    
+    return thead + "</thead>";
+  }
 
   function getDates(startDateSelector, endDateSelector) {
     var dates = [],
@@ -110,11 +113,11 @@
   }
 
   function getDays(startDate, endDate) {
-    return Math.ceil((endDate.getTime() - startDate.getTime())/(one_day));
+    return Math.ceil((endDate.getTime() - startDate.getTime())/(oneDay));
   }
 
   function addDays(date, days) {
-    return new Date(date.getTime() + days * one_day);
+    return new Date(date.getTime() + days * oneDay);
   }
 
   function getApiFormData(departureDate, returnDate) {
