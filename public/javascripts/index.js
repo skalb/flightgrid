@@ -1,5 +1,6 @@
 (function () {
-  var one_day = 1000*60*60*24;
+  var one_day = 1000*60*60*24,
+      minPrice = 10000000;
 
   $(document).ready(function() {
     $( "#beginDate" ).datepicker();
@@ -8,34 +9,47 @@
     $('#submitItinerary').click(function() {
       var startDate = getDateFromString($('#beginDate').val()),
           endDate = getDateFromString($('#endDate').val()),
-          days = getDays(startDate, endDate);
+          days = getDays(startDate, endDate),
+          departureDates = [],
+          returnDates = [];
 
+      minPrice = 10000000;
       $("#pricesGrid").empty();
 
-      var thead = "<thead><th>Departure/Arrival</th>";
+      departureDates.push(startDate);
+      var currentDate = addDays(startDate, 1),
+          thead = "<thead><th>Departure/Return</th>";
+
+      for (var i = 0; i < days - 1; i++) {
+        departureDates.push(currentDate);
+        returnDates.push(currentDate);
+        thead += "<th>" + formatDate(currentDate) + "</th>";
+        currentDate = addDays(currentDate, 1);
+      }
+      returnDates.push(currentDate);
+      thead += "<th>" + formatDate(currentDate) + "</th></thead>";
+
       var rows = "";
 
-      for (var i = 1; i < days + 1; i++) {
-        var departureDate = addDays(startDate, i - 1);
+      for (var r = 0; r < departureDates.length; r++) {
+        var row = "<tr>",
+            departureDate = departureDates[r];
+        
+        row += "<td>" + formatDate(departureDate) + "</td>";
 
-        thead += "<th>" + formatDate(departureDate) + "</th>";
+        for (var c = 0; c < returnDates.length; c++) {
+          var returnDate = returnDates[c],
+              id = "r" + r + "c" + c;
 
-        var row = "<tr>";
-        for (var j = 0; j < days; j++) {
-          var returnDate = addDays(startDate, i);
-          if (j === 0) {
-            row += "<td>" + formatDate(returnDate) + "</td>";
-          }
-          id = "r" + i + "c" + j;
           row += "<td id=" + id + ">";
-          if (i > j) {
+          if (c >= r) {
             row += "...";
             callApi(id, departureDate, returnDate);
           }
           row += "</td>";
         }
-        row += "</tr>";
-        rows += row;
+       row += "</tr>";
+       rows += row;
       }
 
       $("#pricesGrid").append(thead);
@@ -50,14 +64,24 @@
       data: getApiFormData(departureDate, returnDate),
       success: function(data) {
         var prices = _.map(data.itins, function(e) { return e.price; });
-
-        $("#" + id).text(_.min(prices));
+        updatePrice("#" + id, _.min(prices));
       },
       error: function(error, message) {
         $("#" + id).text("X");
         window.console.log(error);
       }
     });
+  }
+
+  function updatePrice(id, price) {
+    if (price < minPrice) {
+      minPrice = price;
+      $('.best').removeClass('best');
+    }
+    if (price <= minPrice) {
+      $(id).addClass('best');
+    }
+    $(id).text(price);
   }
 
   function formatDate(date) {

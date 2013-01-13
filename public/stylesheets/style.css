@@ -11,3 +11,11 @@ table td, table th{
   border:1px solid black;
   padding: 5px;
 }
+
+.best {
+  background-color: green;
+}
+
+.worst {
+  background-color: red;
+}
