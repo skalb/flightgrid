@@ -45,13 +45,11 @@
 
   function callApi(id, departureDate, returnDate) {
     $.ajax({
-      type: "POST",
-      url: "http://www.hipmunk.com/api/results",
+      type: "GET",
+      url: "/flights",
       data: getApiFormData(departureDate, returnDate),
       success: function(data) {
-        var jsonData = JSON.parse(data);
-
-        var prices = _.map(jsonData["itins"], function(e) { return e["price"]; });
+        var prices = _.map(data.itins, function(e) { return e.price; });
 
         $("#" + id).text(_.min(prices));
       },
@@ -88,6 +86,6 @@
         airports = origin + '.' + destination,
         dates = formatApiDate(departureDate) + "." + formatApiDate(returnDate);
 
-    return 'i=' + airports + '%2c' + dates + "&revision=1.25";
+    return "data=" + airports + '%2c' + dates;
   }
 })();

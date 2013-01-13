@@ -17,6 +17,7 @@ app.configure(function(){
 });
 
 app.get('/', index.page);
+app.get('/flights', index.flights);
 
 var port = process.env.PORT || 3000;
 app.listen(port, function() {
