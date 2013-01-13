@@ -3,31 +3,29 @@
       minPrice = 10000000;
 
   $(document).ready(function() {
-    $( "#beginDate" ).datepicker();
-    $( "#endDate" ).datepicker();
+    var $departStartDate = $( "#departStartDate" ),
+        $departEndDate = $( "#departEndDate" ),
+        $returnStartDate = $( "#returnStartDate" ),
+        $returnEndDate = $( "#returnEndDate" );
+
+    _.each([$departStartDate, $departEndDate, $returnStartDate, $returnEndDate], function(e) {
+      e.datepicker();
+    });
 
     $('#submitItinerary').click(function() {
-      var startDate = getDateFromString($('#beginDate').val()),
-          endDate = getDateFromString($('#endDate').val()),
-          days = getDays(startDate, endDate),
-          departureDates = [],
-          returnDates = [];
+      var departureDates = getDates($departStartDate, $departEndDate),
+          returnDates = getDates($returnStartDate, $returnEndDate);
 
       minPrice = 10000000;
       $("#pricesGrid").empty();
 
-      departureDates.push(startDate);
-      var currentDate = addDays(startDate, 1),
-          thead = "<thead><th>Departure/Return</th>";
+      var thead = "<thead><th>Departure/Return</th>";
 
-      for (var i = 0; i < days - 1; i++) {
-        departureDates.push(currentDate);
-        returnDates.push(currentDate);
-        thead += "<th>" + formatDate(currentDate) + "</th>";
-        currentDate = addDays(currentDate, 1);
-      }
-      returnDates.push(currentDate);
-      thead += "<th>" + formatDate(currentDate) + "</th></thead>";
+      _.each(returnDates, function(d) {
+        thead += "<th>" + formatDate(d) + "</th>";
+      });
+      
+      thead += "</thead>";
 
       var rows = "";
 
@@ -42,7 +40,7 @@
               id = "r" + r + "c" + c;
 
           row += "<td id=" + id + ">";
-          if (c >= r) {
+          if (returnDate.getTime() > departureDate.getTime()) {
             row += "...";
             callApi(id, departureDate, returnDate);
           }
@@ -56,6 +54,21 @@
       $("#pricesGrid").append(rows);
     });
   });
+
+  function getDates(startDateSelector, endDateSelector) {
+    var dates = [],
+        startDate = getDateFromString(startDateSelector.val()),
+        endDate = getDateFromString(endDateSelector.val()),
+        days = getDays(startDate, endDate),
+        currentDate = startDate;
+
+    for (var i = 0; i <= days; i++) {
+      dates.push(currentDate);
+      currentDate = addDays(currentDate, 1);
+    }
+
+    return dates;
+  }
 
   function callApi(id, departureDate, returnDate) {
     $.ajax({
