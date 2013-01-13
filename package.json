@@ -4,7 +4,6 @@
   "dependencies": {
     "express": "2.5.x",
     "jade": "*",
-    "jquery"
   },
   "engines": {
     "node": "0.8.x",
