@@ -150,9 +150,13 @@
     return new Date(date.getTime() + days * oneDay);
   }
 
+  function getAirportCode(id) {
+    return $("#" + id).val().split(" - ")[0];
+  }
+
   function getApiFormData(departureDate, returnDate) {
-    var origin = $('#origin').val(),
-        destination = $('#destination').val(),
+    var origin = getAirportCode("origin"),
+        destination = getAirportCode("destination"),
         airports = origin + '.' + destination,
         dates = formatApiDate(departureDate) + "." + formatApiDate(returnDate);
 
