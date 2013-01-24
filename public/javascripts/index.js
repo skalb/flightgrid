@@ -49,7 +49,7 @@
 
     for (var r = 0; r < departureDates.length; r++) {
       var departureDate = departureDates[r],
-          row = "<tr><td>" + formatDate(departureDate) + "</td>";
+          row = "<tr><td class='date'>" + formatDate(departureDate) + "</td>";
 
       for (var c = 0; c < returnDates.length; c++) {
         var returnDate = returnDates[c],
@@ -110,24 +110,44 @@
     });
   }
 
+  function applyHeatMap() {
+    var counts = [];
+
+    $('#pricesGrid tbody td').not('.date').each(function() {
+        var value = parseInt($(this).text(), 10);
+        if (!isNaN(value)) {
+          counts.push(value);
+        }
+    }).get();
+   
+    // return max value
+    var max = _.max(counts),
+        min = _.min(counts),
+        middle = (min + max) / 2.0;
+     
+    // add classes to cells based on nearest 10 value
+    $('#pricesGrid tbody td').not('.date').each(function(){
+      var value = parseInt($(this).text(), 10);
+      if (!isNaN(value)) {
+        if (value < middle) {
+          var pos = parseInt(Math.round((value/middle)*100), 10).toFixed(0);
+          var relative = parseInt(pos / 100.0 * 225, 10).toFixed(0);
+          clr = 'rgb('+relative+','+255+','+relative+')';
+          $(this).css({backgroundColor:clr});
+        }
+        else {
+          var pos2 = parseInt(100 - Math.round(((value-middle)/(max-middle))*100), 10).toFixed(0);
+          var relative2 = parseInt(pos2 / 100.0 * 225, 10).toFixed(0);
+          clr = 'rgb('+255+','+relative2+','+relative2+')';
+          $(this).css({backgroundColor:clr});
+        }
+      }
+    });
+  }
+
   function updatePrice(id, price) {
-    if (price <= minPrice) {
-      if (price < minPrice) {
-        minPrice = price;
-        $('.best').removeClass('best');
-      }
-      $(id).addClass('best');
-    }
-
-    if (price >= maxPrice) {
-      if (price > maxPrice) {
-        maxPrice = price;
-        $('.worst').removeClass('worst');
-      }
-      $(id).addClass('worst');
-    }
-
     $(id).text(price);
+    applyHeatMap();
   }
 
   function formatDate(date) {
