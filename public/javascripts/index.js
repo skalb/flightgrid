@@ -111,32 +111,33 @@
   }
 
   function applyHeatMap() {
-    var counts = [];
+    var counts = [],
+        sum = 0;
 
     $('#pricesGrid tbody td').not('.date').each(function() {
         var value = parseInt($(this).text(), 10);
         if (!isNaN(value)) {
           counts.push(value);
+          sum += value;
         }
     }).get();
    
     // return max value
     var max = _.max(counts),
-        min = _.min(counts),
-        middle = (min + max) / 2.0;
+        average = sum / counts.length;
      
     // add classes to cells based on nearest 10 value
     $('#pricesGrid tbody td').not('.date').each(function(){
       var value = parseInt($(this).text(), 10);
       if (!isNaN(value)) {
-        if (value < middle) {
-          var pos = parseInt(Math.round((value/middle)*100), 10).toFixed(0);
+        if (value < average) {
+          var pos = parseInt(Math.round((value/average)*100), 10).toFixed(0);
           var relative = parseInt(pos / 100.0 * 225, 10).toFixed(0);
           clr = 'rgb('+relative+','+255+','+relative+')';
           $(this).css({backgroundColor:clr});
         }
         else {
-          var pos2 = parseInt(100 - Math.round(((value-middle)/(max-middle))*100), 10).toFixed(0);
+          var pos2 = parseInt(100 - Math.round(((value-average)/(max-average))*100), 10).toFixed(0);
           var relative2 = parseInt(pos2 / 100.0 * 225, 10).toFixed(0);
           clr = 'rgb('+255+','+relative2+','+relative2+')';
           $(this).css({backgroundColor:clr});
