@@ -1,6 +1,7 @@
 var express = require('express'),
     index = require('./routes'),
-    path = require('path');
+    path = require('path'),
+    autocomplete = require('autocomplete');
 
 var app = express.createServer(express.logger());
 
@@ -18,6 +19,7 @@ app.configure(function(){
 
 app.get('/', index.page);
 app.get('/flights', index.flights);
+app.get('/airports', index.airports);
 
 var port = process.env.PORT || 3000;
 app.listen(port, function() {

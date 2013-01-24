@@ -1,7 +1,8 @@
 (function () {
   var oneDay = 1000*60*60*24,
       minPrice = 10000000,
-      maxPrice = 0;
+      maxPrice = 0,
+      termTemplate = "<span class='ui-autocomplete-term'>$1</span>";
 
   $(document).ready(function() {
     var $departStartDate = $( "#departStartDate" ),
@@ -22,6 +23,24 @@
       $("#pricesGrid").empty();
       $("#pricesGrid").append(getTableHeader(returnDates));
       $("#pricesGrid").append(getRows(departureDates, returnDates));
+    });
+
+    $("#origin, #destination").autocomplete({
+      source: "/airports",
+      minLength: 2,
+      open: function(e,ui) {
+            var acData = $(this).data('autocomplete');
+
+            acData
+                .menu
+                .element
+                .find('a')
+                .each(function() {
+                    var me = $(this);
+                    var regex = new RegExp( '(' + acData.term + ')', 'gi' );
+                    me.html( me.text().replace(regex, termTemplate) );
+                });
+        }
     });
   });
 
@@ -92,19 +111,19 @@
   }
 
   function updatePrice(id, price) {
-    if (price < minPrice) {
-      minPrice = price;
-      $('.best').removeClass('best');
-    }
     if (price <= minPrice) {
+      if (price < minPrice) {
+        minPrice = price;
+        $('.best').removeClass('best');
+      }
       $(id).addClass('best');
     }
 
-    if (price > maxPrice) {
-      maxPrice = price;
-      $('.worst').removeClass('worst');
-    }
     if (price >= maxPrice) {
+      if (price > maxPrice) {
+        maxPrice = price;
+        $('.worst').removeClass('worst');
+      }
       $(id).addClass('worst');
     }
 
