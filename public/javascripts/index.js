@@ -30,7 +30,6 @@
       minLength: 2,
       open: function(e,ui) {
             var acData = $(this).data('autocomplete');
-
             acData
                 .menu
                 .element

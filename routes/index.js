@@ -1,10 +1,35 @@
 var $ = require('jquery'),
     _ = require('underscore'),
     fs = require('fs'),
-    ac = require('autocomplete');
+    ac = require('autocomplete'),
+    oneDay = 1000*60*60*24;
+
+function addDays(date, days) {
+    return new Date(date.getTime() + days * oneDay);
+}
+
+function formatDate(date) {
+  var curr_date = date.getDate(),
+      curr_month = date.getMonth() + 1,
+      curr_year = date.getFullYear();
+  
+  return curr_month + "-" + curr_date + "-" + curr_year;
+}
+
+function getDates() {
+  var dates = [],
+      today = new Date();
+
+  dates.push(formatDate(today));
+  dates.push(formatDate(addDays(today, 3)));
+  dates.push(formatDate(addDays(today, 7)));
+  dates.push(formatDate(addDays(today, 10)));
+
+  return dates;
+}
 
 exports.page = function(req, res) {
-  res.render('index', { layout: 'layout', title: 'Flight Grid' });
+  res.render('index', { layout: 'layout', title: 'Flight Grid', dates: getDates() });
 };
 
 exports.flights = function(req, res) {
@@ -19,7 +44,7 @@ exports.flights = function(req, res) {
     },
     error: function(error, message) {
       res.contentType('json');
-      res.send("error");
+      res.send("error:" + message);
     }
   });
 };
